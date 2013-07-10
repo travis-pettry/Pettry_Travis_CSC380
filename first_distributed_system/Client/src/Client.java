@@ -51,12 +51,17 @@ public class Client{
 			num2 = scan.nextInt();
 			
 			try {
-				writer.write(option + "," + num1 + "," + num2 + "\n");
+				String temp = option + "," + num1 + "," + num2 + "\n";
+				writer.write(temp);
+				writer.flush();
 				result = reader.read();
 				System.out.println("The result is " + result);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			
+			printMenu();
+			option = scan.nextInt();
 			
 		}
 	}

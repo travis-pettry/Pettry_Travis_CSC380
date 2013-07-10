@@ -10,6 +10,7 @@ public class Server {
 	ServerSocket ss;
 	int port;
 	List<ClientThread> clients;
+	MathLogic logic;
 	
 	public Server(int port) throws IOException {
 		this.port = port;
@@ -17,13 +18,15 @@ public class Server {
 		
 		ss = new ServerSocket(port);
 		
+		logic = new MathLogic();
+		
 		listen();
 	}
 	
 	private void listen() throws IOException{
 		while(true){
 			Socket clientSocket = ss.accept();
-			ClientThread ct = new ClientThread(clientSocket);
+			ClientThread ct = new ClientThread(clientSocket, logic);
 			clients.add(ct);
 		}
 	}

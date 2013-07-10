@@ -15,9 +15,12 @@ public class ClientThread extends Thread{
 	
 	private BufferedReader reader;
 	private OutputStreamWriter writer;
+	
+	private MathLogic logic;
 
-	public ClientThread(Socket socket) {
+	public ClientThread(Socket socket, MathLogic logic) {
 		this.socket = socket;
+		this.logic = logic;
 		
 		try{
 			in = this.socket.getInputStream();
@@ -33,19 +36,17 @@ public class ClientThread extends Thread{
 	
 	public void run(){
 		int result;
-		try {
-			
-			while(true){
+		while(true){
+			try{
 				String read = reader.readLine();
 				String[] info = read.split(",");
 				result = handleInfo(info);
 				
 				writer.write(result);
 				writer.flush();
-			}
 			
-		} catch (IOException e) {
-			e.printStackTrace();
+			}
+			catch(Exception e){break;}
 		}
 	}
 	
@@ -57,10 +58,10 @@ public class ClientThread extends Thread{
 		int result;
 		
 		if(type == 1){
-			result = num1 + num2;
+			result = logic.add(num1, num2);
 		}
 		else{
-			result = num1 - num2;
+			result = logic.subtract(num1, num2);
 		}
 		
 		return result;
