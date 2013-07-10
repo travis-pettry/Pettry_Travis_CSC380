@@ -39,6 +39,7 @@ public class ClientThread extends Thread{
 		while(true){
 			try{
 				String read = reader.readLine();
+				System.out.println("reding in data: " + read);
 				String[] info = read.split(",");
 				result = handleInfo(info);
 				
@@ -63,7 +64,7 @@ public class ClientThread extends Thread{
 		else{
 			result = logic.subtract(num1, num2);
 		}
-		
+		System.out.println("The result is: " + reuslt);
 		return result;
 	}
 
