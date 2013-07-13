@@ -7,12 +7,16 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import sun.misc.Regexp;
 
 
 public class Client{
 
 	static final String HOST = "localhost";
-	static final int PORT = 8080;
+	static final int PORT = 8181;
 	
 	private InputStream in;
 	private OutputStream out;
@@ -23,6 +27,8 @@ public class Client{
 	private Socket socket;
 	
 	private Scanner scan;
+	
+	private String[] methods;
 	
 	public Client() throws UnknownHostException, IOException {
 		socket = new Socket(HOST, PORT);
@@ -35,51 +41,264 @@ public class Client{
 		
 		scan = new Scanner(System.in);
 		
+		fillMethods();
+	}
+	
+	private void fillMethods(){
+		
+		try {
+			writer.write("0,\n");
+			writer.flush();
+			String mes = reader.readLine();
+			System.out.println(mes);
+			methods = mes.split(";");
+			
+		} catch (IOException e) {e.printStackTrace();}
 		operate();
 	}
 	
 	public void operate(){
-		int option, num1, num2, result;
+		int option;
+		String result;
 		
 		printMenu();
 		option = scan.nextInt();
 		
-		while(option != 3){
-			printMenu2(1);
-			num1 = scan.nextInt();
-			printMenu2(2);
-			num2 = scan.nextInt();
+		while(option != methods.length + 1){			
+			String args = getArgs(option);
 			
 			try {
-				String temp = option + "," + num1 + "," + num2 + "\n";
-				writer.write(temp);
+				writer.write(option + "," + args + "\n");
 				writer.flush();
-				result = reader.read();
+				result = reader.readLine();
 				System.out.println("The result is " + result);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			
 			printMenu();
-			option = scan.nextInt();
-			
+			option = scan.nextInt();			
 		}
 	}
 	
 	private void printMenu(){
 		System.out.println("Please enter a number");
-		System.out.println("1) Add");
-		System.out.println("2) Subtract");
-		System.out.println("3) Quit");
+		for(int i = 0; i < methods.length; i++){
+			System.out.println(i+1 + ") " + methods[i]);
+		}
+		System.out.println((methods.length + 1) + ") Quit");
 	}
 	
-	private void printMenu2(int num){
-		String val = (num == 1)? "first" : "second";
-		System.out.println("What is the " + val + " number");
+	private String getArgs(int option){
+		
+		String method = methods[option - 1];
+		String arg = "";
+		
+		Pattern regex = Pattern.compile("\\(([\\w,\\[\\]]+)\\)");
+		
+		Matcher match = regex.matcher(method);
+		
+		while(match.find()){
+			for(int i = 0; i < match.groupCount(); i++){
+				arg = match.group(i);
+			}
+		}
+		arg = arg.substring(1, arg.length() - 1);
+		
+		String result = "";
+		
+		if(arg.contains("[")){
+			result = getArrayArgs(arg.substring(0,arg.length() - 2));
+		}
+		else{
+			String[] args = arg.split(",");			
+			result = obtainArgs(args);		
+		}
+		return result;
 	}
 
 	public static void main(String[] args) throws UnknownHostException, IOException {
 		new Client();
+	}
+	
+	private String getArrayArgs(String type){
+		
+		String input = "";
+		String result = "";
+		
+		while(!input.toLowerCase().equals("no")){
+			result += switchedInput(type);
+			System.out.println("Do you have more input? (yes or no)");
+			scan = new Scanner(System.in);
+			input = scan.nextLine();
+		}
+		
+		return result;
+	}
+	
+	private String switchedInput(String data){
+		String result = "";
+		
+		switch(data){
+		
+			case "int":
+				result += "I" + getInt() + ",";
+				break;
+				
+			case "String":
+				result += "S" + getString() + ",";
+				break;
+				
+			case "double":
+				result += "D" + getDouble() + ",";
+				break;
+				
+			case "char":
+				result += "C" + getChar() + ",";
+				break;
+				
+			case "float":
+				result += "F" + getFloat() + ",";
+				break;
+				
+			case "long":
+				result += "L" + getLong() + ",";
+				break;
+				
+			case "boolean":
+				result += "B" + getBoolean() + ",";
+				break;				
+	}
+		
+		return result;
+	}
+	
+	private String obtainArgs(String[] args){
+		String result = "";
+		
+		for(String d : args){
+			result += switchedInput(d);
+		}				
+		return result;
+	}
+	
+	private int getInt(){
+		int result = 0;
+		
+		while(true){
+			try{
+				System.out.println("please enter an int.");
+				scan = new Scanner(System.in);
+				result = scan.nextInt();
+				break;
+			}
+			catch(Exception e){
+				System.out.println("That was incorrect!");
+			}
+		}
+		return result;
+	}
+	
+	private double getDouble(){
+		double result = 0;
+		
+		while(true){
+			try{
+				System.out.println("please enter an double.");
+				scan = new Scanner(System.in);
+				result = scan.nextDouble();
+				break;
+			}
+			catch(Exception e){
+				System.out.println("That was incorrect!");
+			}
+		}
+		return result;
+	}
+	
+	private float getFloat(){
+		float result = 0;
+		
+		while(true){
+			try{
+				System.out.println("please enter a double.");
+				scan = new Scanner(System.in);
+				result = scan.nextFloat();
+				break;
+			}
+			catch(Exception e){
+				System.out.println("That was incorrect!");
+			}
+		}
+		return result;
+	}
+	
+	private boolean getBoolean(){
+		boolean result = false;
+		
+		while(true){
+			try{
+				System.out.println("please enter a boolean.");
+				scan = new Scanner(System.in);
+				result = scan.nextBoolean();
+				break;
+			}
+			catch(Exception e){
+				System.out.println("That was incorrect!");
+			}
+		}
+		return result;
+	}
+	
+	private char getChar(){
+		int result = 'c';
+		
+		while(true){
+			try{
+				System.out.println("please enter a char.");
+				scan = new Scanner(System.in);
+				result = scan.nextLine().toCharArray()[0];
+				break;
+			}
+			catch(Exception e){
+				System.out.println("That was incorrect!");
+			}
+		}
+		return (char) result;
+	}
+	
+	private long getLong(){
+		long result = 0;
+		
+		while(true){
+			try{
+				System.out.println("please enter a long.");
+				scan = new Scanner(System.in);
+				result = scan.nextLong();
+				break;
+			}
+			catch(Exception e){
+				System.out.println("That was incorrect!");
+			}
+		}
+		return result;		
+	}
+	
+	private String getString(){
+		String result = "";
+		
+		while(true){
+			try{
+				System.out.println("please enter a string.");
+				scan = new Scanner(System.in);
+				result = scan.nextLine();
+				break;
+			}
+			catch(Exception e){
+				System.out.println("That was incorrect!");
+			}
+		}
+		return result;
 	}
 
 }
