@@ -1,18 +1,20 @@
+
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import sun.net.ConnectionResetException;
 
 
 public class ClientThread extends Thread{
@@ -26,6 +28,9 @@ public class ClientThread extends Thread{
 	
 	private MathLogic logic;
 	private Class<? extends MathLogic> math;
+	
+	private Class<?> chosenClass;
+	private List<Class<?>> classes;
 
 	public ClientThread(Socket socket, MathLogic logic) {
 		this.socket = socket;
@@ -39,7 +44,27 @@ public class ClientThread extends Thread{
 			reader = new BufferedReader(new InputStreamReader(in));
 			writer = new OutputStreamWriter(out);
 		}
-		catch(Exception e){e.printStackTrace();}	
+		catch(Exception e){e.printStackTrace();}
+		
+		classes = new ArrayList<Class<?>>();
+		
+		Scanner scan;
+		try {
+			scan = new Scanner(new File("classes.txt"));
+			while(scan.hasNext()){
+				try {
+					String t = scan.nextLine();
+					classes.add(Class.forName(t));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
 		
 		this.start();
 	}
@@ -52,7 +77,7 @@ public class ClientThread extends Thread{
 				System.out.println("reding in data: " + read);
 				String[] info = read.split(",");
 				result = handleInfo(info);
-				System.out.println(result);
+				System.out.println(" hererereree " + result);
 				writer.write(result);
 				writer.flush();
 			
@@ -74,17 +99,33 @@ public class ClientThread extends Thread{
 		String result = "";
 		
 		if(type == 0){
-			Method[] methods = math.getDeclaredMethods();
-			List<String> methodNames = new ArrayList();
+			
+			Method[] methods = chosenClass.getDeclaredMethods();
+			List<String> methodNames = new ArrayList<String>();
+			
+			result = "";
 			
 			for(int i = 0; i < methods.length; i++){
-				System.out.println(methods[i].toString()+"_____________________________");
 				methodNames.add(methods[i].toString().replace("java.lang.String", "String").replace("java.lang.Object", "object").split("\\.")[1]);
 				result += methods[i].toString().replace("java.lang.String", "String").replace("java.lang.Object", "object").split("\\.")[1] + ";";
 			}
 		}
+		else if(type == -1){
+			for(int i = 0;  i < classes.size(); i++){
+				result += classes.get(i).toString() + ";";
+			}
+		}
+		else if( type == -2){
+			int classs = Integer.parseInt(info[1]) - 1;
+			chosenClass = classes.get(classs);	
+			try {
+				result = ("you chose " + chosenClass.toString());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		else{
-			Method[] methods = math.getDeclaredMethods();
+			Method[] methods = chosenClass.getDeclaredMethods();
 			Method method = methods[type - 1];
 			
 			
@@ -102,10 +143,10 @@ public class ClientThread extends Thread{
 					}
 				}
 				
-				System.out.println(arg2);
 				
-				if(arg2.split(",").length > 1){
-					result = method.invoke(logic, args.toArray()) + "";					 
+				if(arg2.split(",").length >= 1){
+					System.out.println(method.toString());
+					result = method.invoke(chosenClass.newInstance(), args.toArray()) + "";					 
 				}
 				else{
 					arg2 = arg2.substring(1, arg2.length()-3);
@@ -117,7 +158,7 @@ public class ClientThread extends Thread{
 							for(int i = 0; i < t.length; i++){
 								temp[i] = (int) t[i];
 							}
-							result = method.invoke(logic, temp) + "";	
+							result = method.invoke(chosenClass.newInstance(), temp) + "";	
 							break;
 							
 						case "double":
@@ -126,7 +167,7 @@ public class ClientThread extends Thread{
 							for(int i = 0; i < t.length; i++){
 								temp2[i] = (double) t[i];
 							}
-							result = method.invoke(logic, temp2) + "";	
+							result = method.invoke(chosenClass.newInstance(), temp2) + "";	
 							break;
 							
 						case "long":
@@ -135,7 +176,7 @@ public class ClientThread extends Thread{
 							for(int i = 0; i < t.length; i++){
 								temp3[i] = (long) t[i];
 							}
-							result = method.invoke(logic, temp3) + "";	
+							result = method.invoke(chosenClass.newInstance(), temp3) + "";	
 							break;
 							
 						case "float":
@@ -144,7 +185,7 @@ public class ClientThread extends Thread{
 							for(int i = 0; i < t.length; i++){
 								temp4[i] = (float) t[i];
 							}
-							result = method.invoke(logic, temp4) + "";	
+							result = method.invoke(chosenClass.newInstance(), temp4) + "";	
 							break;
 							
 						case "boolean":
@@ -153,7 +194,7 @@ public class ClientThread extends Thread{
 							for(int i = 0; i < t.length; i++){
 								temp5[i] = (boolean) t[i];
 							}
-							result = method.invoke(logic, temp5) + "";	
+							result = method.invoke(chosenClass.newInstance(), temp5) + "";	
 							break;
 							
 						case "string":
@@ -162,7 +203,7 @@ public class ClientThread extends Thread{
 							for(int i = 0; i < t.length; i++){
 								temp6[i] = (String) t[i];
 							}
-							result = method.invoke(logic, (Object[]) temp6) + "";	
+							result = method.invoke(chosenClass.newInstance(), (Object[]) temp6) + "";	
 							break;
 							
 						case "char":
@@ -171,7 +212,7 @@ public class ClientThread extends Thread{
 							for(int i = 0; i < t.length; i++){
 								temp7[i] = (char) t[i];
 							}
-							result = method.invoke(logic, temp7) + "";	
+							result = method.invoke(chosenClass.newInstance(), temp7) + "";	
 							break;
 					}
 				}

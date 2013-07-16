@@ -29,6 +29,7 @@ public class Client{
 	private Scanner scan;
 	
 	private String[] methods;
+	private boolean hasClass = false;
 	
 	public Client() throws UnknownHostException, IOException {
 		socket = new Socket(HOST, PORT);
@@ -41,7 +42,30 @@ public class Client{
 		
 		scan = new Scanner(System.in);
 		
+		askForClass();
+	}
+	
+	private void askForClass(){
+		
+		try {
+			writer.write("-1,\n");
+			writer.flush();
+			String mes = reader.readLine();
+			String[] m = mes.split(";");
+			
+			System.out.println("Pick a class");
+			printStuff(m);
+			scan = new Scanner(System.in);
+			int temp = scan.nextInt();
+			
+			writer.write("-2," + temp + "\n");
+			writer.flush();
+			String t = reader.readLine();
+			//System.out.println(t);
+			
+		} catch (IOException e) {e.printStackTrace();}
 		fillMethods();
+		
 	}
 	
 	private void fillMethods(){
@@ -50,11 +74,17 @@ public class Client{
 			writer.write("0,\n");
 			writer.flush();
 			String mes = reader.readLine();
-			System.out.println(mes);
+			System.out.println(mes + "messsss");
 			methods = mes.split(";");
-			
 		} catch (IOException e) {e.printStackTrace();}
 		operate();
+	}
+	
+	private void printStuff(String[] data){
+		for(int i = 0; i < data.length; i++){
+			System.out.println(i+1 + ") " + data[i]);
+		}
+		System.out.println((data.length + 1) + ") Quit");
 	}
 	
 	public void operate(){
@@ -62,13 +92,23 @@ public class Client{
 		String result;
 		
 		printMenu();
+		scan = new Scanner(System.in);
 		option = scan.nextInt();
 		
-		while(option != methods.length + 1){			
-			String args = getArgs(option);
+		String args = "";
+		hasClass = true;
+		while(option != methods.length + 1){		
+			if(!hasClass){
+				args = "0," + option + "\n";
+				hasClass = true;
+			}
+			else{
+				args = option +"," + getArgs(option) + "\n";	
+			}
 			
 			try {
-				writer.write(option + "," + args + "\n");
+				System.out.println(" args: " + args );
+				writer.write(args);
 				writer.flush();
 				result = reader.readLine();
 				System.out.println("The result is " + result);
@@ -77,6 +117,7 @@ public class Client{
 			}
 			
 			printMenu();
+			scan = new Scanner(System.in);
 			option = scan.nextInt();			
 		}
 	}
