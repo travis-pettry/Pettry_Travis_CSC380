@@ -74,5 +74,18 @@ public class MathLogic {
 		}
 		return result;
 	}
+	
+	public synchronized Sum doAdd(Add temp){
+		Sum s = new Sum();
+		s.setVal(temp.one + temp.two);
+		return s;
+	}
+	
+	public synchronized Str doStr(Str temp){
+		Str s = new Str(temp.getR(), temp.getT());
+		
+		return s;
+		
+	}
 
 }

@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.net.SocketException;
@@ -124,6 +125,34 @@ public class ClientThread extends Thread{
 				e.printStackTrace();
 			}
 		}
+		else if(type == -3){
+			String obj = info[1].trim();
+			
+			try {
+				Class c = Class.forName(obj);
+				
+				Constructor d = c.getConstructors()[0];
+				
+				String temp = "";
+				
+				Pattern regex = Pattern.compile("\\(([\\w,\\[\\]]+)\\)");
+				
+				Matcher match = regex.matcher(d.toString().replace("java.lang.String", "String").replace("java.lang.Object", "object"));
+				
+				while(match.find()){
+					for(int i = 0; i < match.groupCount(); i++){
+						temp = match.group(i);
+					}
+				}
+				
+				temp = temp.substring(1, temp.length() - 1);
+				
+				result = temp;
+				
+				
+			} catch (ClassNotFoundException e) {e.printStackTrace();}
+			
+		}
 		else{
 			Method[] methods = chosenClass.getDeclaredMethods();
 			Method method = methods[type - 1];
@@ -143,8 +172,34 @@ public class ClientThread extends Thread{
 					}
 				}
 				
+				String[] p = arg2.split(",");
+				String obj = "";
+				if(p.length == 1){
+					obj = p[0].substring(1, p[0].length()-1);
+				}
 				
-				if(arg2.split(",").length >= 1){
+				if(!p.equals("")){
+					Class c = Class.forName(obj.trim());
+					
+					Constructor con = c.getConstructors()[0];
+					
+					List<Object> pram = new ArrayList<Object>();
+					
+					for(int i = 1; i < info.length; i++){
+						pram.add(getObject(info[i]));
+					}
+					
+					Object o = con.newInstance(pram.toArray());
+					
+					Object res = method.invoke(chosenClass.newInstance(), o);
+					
+					System.out.println(res.toString());
+					result = res.toString();
+					
+					
+					
+				}				
+				else if(arg2.split(",").length >= 1){
 					System.out.println(method.toString());
 					result = method.invoke(chosenClass.newInstance(), args.toArray()) + "";					 
 				}

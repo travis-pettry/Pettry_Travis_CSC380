@@ -87,6 +87,37 @@ public class Client{
 		System.out.println((data.length + 1) + ") Quit");
 	}
 	
+	private String getObjectArgs(String method){
+		
+		String result = "";
+		
+		String temp = "";
+		
+		Pattern regex = Pattern.compile("\\(([\\w,\\[\\]]+)\\)");
+		
+		Matcher match = regex.matcher(method);
+		
+		while(match.find()){
+			for(int i = 0; i < match.groupCount(); i++){
+				temp = match.group(i);
+			}
+		}
+		
+		temp = temp.substring(1, temp.length() - 1);
+		
+		try{
+			writer.write("-3, " + temp + "\n");
+			writer.flush();
+			String res = reader.readLine();
+			
+			result = obtainArgs(res.split(","));//String array
+			
+		}
+		catch(Exception e){e.printStackTrace();}
+		
+		return result;
+	}
+	
 	public void operate(){
 		int option;
 		String result;
@@ -103,7 +134,12 @@ public class Client{
 				hasClass = true;
 			}
 			else{
-				args = option +"," + getArgs(option) + "\n";	
+				
+				String a = getArgs(option);
+				
+				a = (a.equals(""))? getObjectArgs(methods[option - 1]) : a;
+				
+				args = option +"," + a + "\n";	
 			}
 			
 			try {
