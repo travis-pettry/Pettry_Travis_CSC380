@@ -51,7 +51,7 @@ public class ClientThread extends Thread{
 		
 		Scanner scan;
 		try {
-			scan = new Scanner(new File("classes.txt"));
+			scan = new Scanner(new File(this.getClass().getClassLoader().getResource("classes.txt").toURI()));
 			while(scan.hasNext()){
 				try {
 					String t = scan.nextLine();
@@ -60,7 +60,7 @@ public class ClientThread extends Thread{
 					e.printStackTrace();
 				}
 			}
-		} catch (FileNotFoundException e1) {
+		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
@@ -177,8 +177,8 @@ public class ClientThread extends Thread{
 				if(p.length == 1){
 					obj = p[0].substring(1, p[0].length()-1);
 				}
-				
-				if(!p.equals("")){
+			
+				if(!obj.equals("") && !obj.equals("int") && !obj.equals("int[]") && !obj.equals("String") && !obj.equals("String[]") && !obj.equals("boolean") && !obj.equals("booelan[]") && !obj.equals("float") && !obj.equals("float[]") && !obj.equals("char") && !obj.equals("char[]") && !obj.equals("long") && !obj.equals("long[]") ){
 					Class c = Class.forName(obj.trim());
 					
 					Constructor con = c.getConstructors()[0];
@@ -195,13 +195,14 @@ public class ClientThread extends Thread{
 					
 					System.out.println(res.toString());
 					result = res.toString();
-					
-					
-					
 				}				
-				else if(arg2.split(",").length >= 1){
-					System.out.println(method.toString());
-					result = method.invoke(chosenClass.newInstance(), args.toArray()) + "";					 
+				else if(arg2.split(",").length > 1){
+					System.out.println(method.toString() + " " + chosenClass.toString());
+					for(Object d : args.toArray()){
+						System.out.println(d instanceof Integer);
+					}
+					Object[] o = args.toArray();
+					result = method.invoke(chosenClass.newInstance(), o) + "";					 
 				}
 				else{
 					arg2 = arg2.substring(1, arg2.length()-3);
