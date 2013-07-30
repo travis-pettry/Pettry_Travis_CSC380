@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resturants>
+    <resturant name="Jim's Place">
+        <menu>
+            <menuItem name="Pizza" price="14.99" description="yuumy" />
+            <menuItem name="Ham" price="9999.99" description="yuumy2" />
+            <menuItem name="Pi" price="3.14" description="?" />
+        </menu>
+    </resturant>
+    <resturant name="Mikes's Place">
+        <menu>
+            <menuItem name="Milk" price="114.99"
+                      description="Stright from the utter it's self" />
+            <menuItem name="Buggers" price="0.99" description="It's so cheap!" />
+            <menuItem name="Mystry Meat" price="0.01"
+                      description="??????? You don't want to know" />
+        </menu>
+    </resturant>
+    <resturant name="Sues's Place">
+        <menu>
+            <menuItem name="BACON!!!!!!!!!!" price="10.99" description="IT'S BACON" />
+            <menuItem name="Eggs" price="9.99" description="yuumy5" />
+            <menuItem name="Cake" price="666.66" description="Let them eat cake!" />
+        </menu>
+    </resturant>
+</resturants>
