@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="resturants" type="resturants"/>
+
+  <xs:complexType name="menuItem">
+    <xs:sequence/>
+    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="price" type="xs:double" use="required"/>
+    <xs:attribute name="description" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="Resturant">
+    <xs:sequence>
+      <xs:element name="menu" type="menu" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="menu">
+    <xs:sequence>
+      <xs:element name="menu" type="menuItem" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="resturants">
+    <xs:sequence>
+      <xs:element name="resturants" type="Resturant" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="start">
+    <xs:sequence/>
+  </xs:complexType>
+</xs:schema>
+
