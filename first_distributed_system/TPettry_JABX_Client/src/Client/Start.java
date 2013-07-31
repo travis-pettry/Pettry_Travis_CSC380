@@ -3,7 +3,9 @@ package Client;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.Socket;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -96,13 +98,46 @@ public class Start {
 
             MenuItem mi = menu.getMenuItem().get(input);
             System.out.println(mi.getName());
+//
+//            socket = new Socket("localhost", 8080);
+//            in = socket.getInputStream();
+//            out = socket.getOutputStream();
+//
+//            write = new OutputStreamWriter(out);
+//            write.write("POST http://localhost:8080/TPettry_JABX_3/ HTTP/1.1\nhello world\n\n");
+//            write.flush();
 
-            write = new OutputStreamWriter(out);
-            write.write("POST http://localhost:8080/TPettry_JABX_3/ HTTP/1.1\nhello world\n\n");
-            write.flush();
-
-            read = new BufferedReader(new InputStreamReader(in));
-            System.out.println(read.readLine());
+            //System.out.println("Start sending " + action + " request");
+            URL url = new URL( "http://localhost:8080/TPettry_JABX_3/" );
+            HttpURLConnection rc = (HttpURLConnection)url.openConnection();
+            //System.out.println("Connection opened " + rc );
+            rc.setRequestMethod("POST");
+            rc.setDoOutput( true );
+            rc.setDoInput( true );
+            rc.setRequestProperty( "Content-Type", "text/xml; charset=utf-8" );
+            String reqStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><resturants><resturant name=\""+ chosenRest.getName() +"\"><menu><menuItem name=\""+ mi.getName() +"\" price=\""+ mi.getPrice() +"\" description=\""+ mi.getDescription() + "\" /></menu></resturant></resturants>";  // the entire payload in a single String
+            int len = reqStr.length();
+            rc.setRequestProperty( "Content-Length", Integer.toString( len ) );
+            rc.connect();
+            OutputStreamWriter out = new OutputStreamWriter( rc.getOutputStream() );
+            out.write( reqStr, 0, len );
+            out.flush();
+            System.out.println("Request sent, reading response ");
+            InputStreamReader read = new InputStreamReader( rc.getInputStream() );
+            StringBuilder sb = new StringBuilder();
+            int ch = read.read();
+            System.out.println(ch);
+            while( ch != -1 ){
+                sb.append((char)ch);
+                ch = read.read();
+            }
+          //  response = sb.toString(); // entire response ends up in String
+            read.close();
+            rc.disconnect();
+            System.out.println(sb.toString());
+//
+//            read = new BufferedReader(new InputStreamReader(in));
+//            System.out.println(read.readLine());
 
         }
         catch(Exception e){e.printStackTrace();}

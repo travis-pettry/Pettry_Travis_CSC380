@@ -2,8 +2,8 @@ package Servlets;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Scanner;
 
 import javax.servlet.ServletException;
@@ -11,6 +11,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
 
 /**
  * Servlet implementation class Index2
@@ -50,18 +52,27 @@ private static final long serialVersionUID = 1L;
 
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("im here");
-		InputStream in = request.getInputStream();
-		BufferedReader d = request.getReader();
-		
-		int c = d.read();
-		
-		while(c != -1){
-			System.out.print(c);
-			c = d.read();
+		try{
+			BufferedReader reader = request.getReader();
+			System.out.println("Im here");
+			
+			String r = reader.readLine();
+			System.out.println(r);
+			
+			File xml = File.createTempFile("xml", ".xml");
+			FileWriter fr = new FileWriter(xml);
+			fr.write(r);
+			fr.flush();
+			
+			JAXBContext jc = JAXBContext.newInstance("Servlets");
+			Unmarshaller unmarsh = jc.createUnmarshaller();
+			Resturants re = (Resturants) unmarsh.unmarshal(xml);
+			
+			
+			response.getWriter().write("Thank you for your order! You ordered " + re.getResturant().get(0).getMenu().getMenuItem().get(0).getName() + " From: " + re.getResturant().get(0).getName());
+			response.getWriter().flush();
 		}
-		
-		
+		catch(Exception e){e.printStackTrace();}
 	}
 
 }
