@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.example.org/stock" xmlns:m="http://www.example.org/stock" xmlns:soap="http://www.w3.org/2001/12/soap-envelope">
+    <xs:import namespace="http://www.w3.org/2001/12/soap-envelope" schemaLocation="soap.xsd"/>
+    <xs:element name="resturantResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="m:resturants"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="resturants">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="m:resturant"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="resturant">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="m:id"/>
+                <xs:element ref="m:name"/>
+                <xs:element ref="m:menu"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="id" type="xs:integer"/>
+    <xs:element name="menu">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="m:menuItem"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="menuItem">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="m:name"/>
+                <xs:element ref="m:price"/>
+                <xs:element ref="m:description"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="price" type="xs:decimal"/>
+    <xs:element name="description" type="xs:string"/>
+    <xs:element name="name" type="xs:string"/>
+</xs:schema>

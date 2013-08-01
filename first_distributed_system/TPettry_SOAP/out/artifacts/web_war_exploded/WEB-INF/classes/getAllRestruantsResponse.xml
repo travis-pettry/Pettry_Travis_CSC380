@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<soap:Envelope
+        xmlns:soap="http://www.w3.org/2001/12/soap-envelope"
+        soap:encodingStyle="http://localhost:8080/soap/restaurant">
+
+    <soap:Body xmlns:m="http://www.example.org/stock">
+        <m:resturantResponse>
+            <m:resturants>
+            <m:resturant>
+                <m:id>1</m:id>
+                <m:name>Joe's Place</m:name>
+                <m:menu>
+                    <m:menuItem>
+                        <m:name>Milk</m:name>
+                        <m:price>114.99</m:price>
+                        <m:description>Stright from the utter it's self</m:description>
+                    </m:menuItem>
+                    <m:menuItem>
+                        <m:name>Buggers</m:name>
+                        <m:price>0.99</m:price>
+                        <m:description>It's so cheap!</m:description>
+                    </m:menuItem>
+                    <m:menuItem>
+                        <m:name>Mystry Meat</m:name>
+                        <m:price>0.01</m:price>
+                        <m:description>??????? You don't want to know</m:description>
+                    </m:menuItem>
+                </m:menu>
+            </m:resturant>
+            <m:resturant>
+                <m:id>2</m:id>
+                <m:name>Mike's Place</m:name>
+                <m:menu>
+                    <m:menuItem>
+                        <m:name>Pizza</m:name>
+                        <m:price>14.99</m:price>
+                        <m:description>It's sooo good</m:description>
+                    </m:menuItem>
+                    <m:menuItem>
+                        <m:name>Milk Shake</m:name>
+                        <m:price>10.99</m:price>
+                        <m:description>It very thick</m:description>
+                    </m:menuItem>
+                </m:menu>
+            </m:resturant>
+            <m:resturant>
+                <m:id>3</m:id>
+                <m:name>Sue's Place</m:name>
+                <m:menu>
+                    <m:menuItem>
+                        <m:name>Cake</m:name>
+                        <m:price>0.00</m:price>
+                        <m:description>Let them eat cake</m:description>
+                    </m:menuItem>
+                    <m:menuItem>
+                        <m:name>Ice cream</m:name>
+                        <m:price>1000000.99</m:price>
+                        <m:description>wow...</m:description>
+                    </m:menuItem>
+                    <m:menuItem>
+                        <m:name>Hot Dogs</m:name>
+                        <m:price>0.11</m:price>
+                        <m:description>It's a foot long!</m:description>
+                    </m:menuItem>
+                </m:menu>
+            </m:resturant>
+            </m:resturants>
+        </m:resturantResponse>
+    </soap:Body>
+
+</soap:Envelope>
